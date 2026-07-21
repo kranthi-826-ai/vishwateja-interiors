@@ -1,4 +1,4 @@
-// File: C:\Users\ykran\Desktop\Vishwateja Interiors\vishwateja-interiors\app\page.tsx
+// File: C:\Users\ykran\Desktop\IMP\PROJECT\Vishwateja Interiors\vishwateja-interiors\app\page.tsx
 import * as entry from '../../../app/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
