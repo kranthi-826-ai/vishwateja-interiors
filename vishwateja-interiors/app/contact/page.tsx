@@ -38,6 +38,7 @@ export default function ContactPage() {
             />
           </div>
           <Button type="submit">Send Message</Button>
+        <input type="text" name="website" style={{ display: "none" }} tabIndex={-1} autoComplete="off" />
         </form>
 
         {/* Info + Map */}
