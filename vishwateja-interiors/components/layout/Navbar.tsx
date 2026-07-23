@@ -21,7 +21,7 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 bg-warmwhite/90 backdrop-blur border-b border-graylight">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
         <Link href="/">
-          <Logo height={50} />
+          <Logo height={80} />
         </Link>
 
         <nav className="hidden md:flex gap-8 text-sm font-medium text-navy">

@@ -5,7 +5,7 @@ type LogoProps = {
   className?: string;
 };
 
-export default function Logo({ height = 100, className = "" }: LogoProps) {
+export default function Logo({ height = 70, className = "" }: LogoProps) {
   return (
     <div className={`logo-reveal ${className}`}>
       <img
