@@ -9,12 +9,12 @@ const points = [
 
 export default function WhyChooseUs() {
   return (
-    <section className="bg-graylight/40">
+    <section className="bg-graylight/50">
       <div className="max-w-7xl mx-auto px-6 py-24">
         <Reveal>
           <div className="text-center mb-14">
-            <p className="text-royal font-medium tracking-widest text-sm mb-2">
-              WHY CHOOSE US
+            <p className="text-gold font-medium tracking-[0.2em] text-sm mb-2 uppercase">
+              Why Choose Us
             </p>
             <h2 className="text-3xl md:text-4xl font-semibold text-navy">
               Precision You Can See. Quality You Can Trust.
@@ -26,11 +26,11 @@ export default function WhyChooseUs() {
           {points.map((p, i) => (
             <Reveal key={p.title} delay={i * 120}>
               <div className="text-center group">
-                <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-navy text-white flex items-center justify-center font-semibold group-hover:bg-royal group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
+                <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-navy text-gold flex items-center justify-center font-semibold group-hover:bg-goldDark group-hover:text-white group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
                   ✓
                 </div>
                 <h3 className="font-medium text-navy mb-2">{p.title}</h3>
-                <p className="text-sm text-navy/70">{p.desc}</p>
+                <p className="text-sm text-navy/60">{p.desc}</p>
               </div>
             </Reveal>
           ))}

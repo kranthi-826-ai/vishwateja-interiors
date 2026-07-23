@@ -13,16 +13,14 @@ const projects = [
 
 export default function GalleryPage() {
   const [active, setActive] = useState("All");
-  const filtered =
-    active === "All" ? projects : projects.filter((p) => p.category === active);
+  const [lightbox, setLightbox] = useState<string | null>(null);
+  const filtered = active === "All" ? projects : projects.filter((p) => p.category === active);
 
   return (
-    <section className="max-w-7xl mx-auto px-6 py-24">
+    <section className="max-w-7xl mx-auto px-6 py-24 bg-warmwhite">
       <Reveal>
         <div className="text-center mb-10">
-          <p className="text-royal font-medium tracking-widest text-sm mb-2">
-            OUR WORK
-          </p>
+          <p className="text-gold font-medium tracking-[0.2em] text-sm mb-2 uppercase">Our Work</p>
           <h1 className="text-4xl font-semibold text-navy">Project Gallery</h1>
         </div>
       </Reveal>
@@ -33,9 +31,7 @@ export default function GalleryPage() {
             key={c}
             onClick={() => setActive(c)}
             className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-              active === c
-                ? "bg-navy text-white scale-105"
-                : "bg-graylight text-navy hover:bg-navy/10"
+              active === c ? "bg-navy text-gold scale-105" : "bg-graylight text-navy hover:bg-navy/10"
             }`}
           >
             {c}
@@ -46,20 +42,26 @@ export default function GalleryPage() {
       <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
         {filtered.map((p, i) => (
           <Reveal key={p.name} delay={i * 100}>
-            <div className="group relative aspect-[4/5] rounded-2xl overflow-hidden">
-              <img
-                src={p.img}
-                alt={p.name}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-              />
+            <div
+              onClick={() => setLightbox(p.img)}
+              className="group relative aspect-[4/5] rounded-2xl overflow-hidden cursor-pointer ring-1 ring-transparent hover:ring-gold/40 transition-all duration-300"
+            >
+              <img src={p.img} alt={p.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
               <div className="absolute inset-0 bg-gradient-to-t from-navy/80 via-navy/10 to-transparent" />
-              <p className="absolute bottom-4 left-4 text-white font-medium">
-                {p.name}
-              </p>
+              <p className="absolute bottom-4 left-4 text-white font-medium">{p.name}</p>
             </div>
           </Reveal>
         ))}
       </div>
+
+      {lightbox && (
+        <div
+          onClick={() => setLightbox(null)}
+          className="fixed inset-0 bg-navy/90 z-50 flex items-center justify-center p-6 cursor-zoom-out animate-[fadeIn_0.3s_ease]"
+        >
+          <img src={lightbox} alt="Project" className="max-h-[85vh] max-w-full rounded-2xl shadow-2xl" />
+        </div>
+      )}
     </section>
   );
 }

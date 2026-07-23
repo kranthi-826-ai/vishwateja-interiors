@@ -1,8 +1,8 @@
 "use client";
-import AnimatedLogo from "@/components/logo/AnimatedLogo";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import Logo from "@/components/layout/Logo";
 
 const links = [
   { href: "/", label: "Home" },
@@ -18,16 +18,18 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-graylight">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-        <Link href="/"><AnimatedLogo /></Link>
+    <header className="sticky top-0 z-50 bg-warmwhite/90 backdrop-blur border-b border-graylight">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
+        <Link href="/">
+          <Logo height={50} />
+        </Link>
 
         <nav className="hidden md:flex gap-8 text-sm font-medium text-navy">
           {links.map((l) => (
             <Link key={l.href} href={l.href} className="relative group py-1">
               {l.label}
               <span
-                className={`absolute left-0 -bottom-0.5 h-0.5 bg-royal transition-all duration-300 ${
+                className={`absolute left-0 -bottom-0.5 h-0.5 bg-gold transition-all duration-300 ${
                   pathname === l.href ? "w-full" : "w-0 group-hover:w-full"
                 }`}
               />
@@ -37,7 +39,7 @@ export default function Navbar() {
 
         <a
           href="tel:9885034309"
-          className="hidden md:inline-block bg-navy text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-royal hover:scale-105 active:scale-95 transition-all duration-300"
+          className="hidden md:inline-block bg-navy text-gold px-5 py-2 rounded-full text-sm font-medium hover:bg-goldDark hover:text-white hover:scale-105 active:scale-95 transition-all duration-300"
         >
           Call Now
         </a>

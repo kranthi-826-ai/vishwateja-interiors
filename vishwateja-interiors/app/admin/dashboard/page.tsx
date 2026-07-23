@@ -1,72 +1,50 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import DataTable from "@/components/dashboard/DataTable";
+import StatCard from "@/components/dashboard/StatCard";
 
-type Invoice = {
-  invoice_number: string;
-  date: string;
-  grand_total: number;
-  status: string;
-};
-
-export default function PortalDashboardPage() {
-  const router = useRouter();
-  const [checked, setChecked] = useState(false);
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function DashboardPage() {
+  const [stats, setStats] = useState({ monthlyInvoiced: "₹0", pending: "₹0", recentLeads: "0" });
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data }) => {
-      if (!data.session) {
-        router.push("/portal/login");
-        return;
-      }
-      setChecked(true);
+    const load = async () => {
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
 
-      const email = data.session.user.email;
-      const { data: rows } = await supabase
-        .from("invoices")
-        .select("invoice_number, date, grand_total, status")
-        .eq("customer_email", email)
-        .order("created_at", { ascending: false });
+      const { data: invoices } = await supabase.from("invoices").select("grand_total, status, created_at");
 
-      if (rows) setInvoices(rows as Invoice[]);
-      setLoading(false);
-    });
-  }, [router]);
+      const monthly = (invoices || [])
+        .filter((i) => new Date(i.created_at) >= startOfMonth)
+        .reduce((sum, i) => sum + Number(i.grand_total), 0);
 
-  if (!checked) return null;
+      const pending = (invoices || [])
+        .filter((i) => i.status === "Pending")
+        .reduce((sum, i) => sum + Number(i.grand_total), 0);
 
-  const rows = invoices.map((i) => ({
-    invoice: i.invoice_number,
-    date: new Date(i.date).toLocaleDateString("en-IN"),
-    total: `₹${i.grand_total.toLocaleString("en-IN")}`,
-    status: i.status,
-  }));
+      const { count: leadsCount } = await supabase.from("leads").select("*", { count: "exact", head: true });
+
+      setStats({
+        monthlyInvoiced: `₹${monthly.toLocaleString("en-IN")}`,
+        pending: `₹${pending.toLocaleString("en-IN")}`,
+        recentLeads: String(leadsCount || 0),
+      });
+    };
+    load();
+  }, []);
 
   return (
-    <section className="max-w-4xl mx-auto px-6 py-16">
-      <h1 className="text-2xl font-semibold text-navy mb-2">My Project</h1>
-      <p className="text-sm text-navy/60 mb-8">
-        Track your invoices and project status here.
-      </p>
+    <div>
+      <div className="mb-8">
+        <h1 className="text-2xl font-semibold text-navy">Dashboard</h1>
+        <p className="text-sm text-navy/50 mt-1">Welcome back — here's what's happening today.</p>
+      </div>
 
-      <h2 className="text-lg font-medium text-navy mb-4">My Invoices</h2>
-      {loading ? (
-        <p className="text-navy/50">Loading...</p>
-      ) : (
-        <DataTable
-          columns={[
-            { key: "invoice", label: "Invoice #" },
-            { key: "date", label: "Date" },
-            { key: "total", label: "Total" },
-            { key: "status", label: "Status" },
-          ]}
-          rows={rows}
-        />
-      )}
-    </section>
+      <div className="grid sm:grid-cols-3 gap-6">
+        <StatCard label="This Month's Invoiced" value={stats.monthlyInvoiced} />
+        <StatCard label="Pending Payments" value={stats.pending} />
+        <StatCard label="Total Leads" value={stats.recentLeads} />
+      </div>
+    </div>
   );
 }

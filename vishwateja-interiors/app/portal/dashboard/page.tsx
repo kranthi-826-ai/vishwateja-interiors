@@ -4,49 +4,59 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import DataTable from "@/components/dashboard/DataTable";
 
-// TEMPORARY placeholder rows — replace with Supabase query filtered by logged-in customer's email/mobile
-const myInvoices = [
-  { invoice: "VTI-2026-001", date: "13-05-2026", total: "₹68,550", status: "Paid" },
-];
+type Invoice = { invoice_number: string; date: string; grand_total: number; status: string };
 
 export default function PortalDashboardPage() {
   const router = useRouter();
   const [checked, setChecked] = useState(false);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      if (!data.session) {
-        router.push("/portal/login");
-      } else {
-        setChecked(true);
-      }
+    supabase.auth.getSession().then(async ({ data }) => {
+      if (!data.session) { router.push("/portal/login"); return; }
+      setChecked(true);
+      const email = data.session.user.email;
+      const { data: rows } = await supabase
+        .from("invoices")
+        .select("invoice_number, date, grand_total, status")
+        .eq("customer_email", email)
+        .order("created_at", { ascending: false });
+      if (rows) setInvoices(rows as Invoice[]);
+      setLoading(false);
     });
   }, [router]);
 
   if (!checked) return null;
 
-  return (
-    <section className="max-w-4xl mx-auto px-6 py-16">
-      <h1 className="text-2xl font-semibold text-navy mb-2">My Project</h1>
-      <p className="text-sm text-navy/60 mb-8">
-        Track your invoices and project status here.
-      </p>
+  const rows = invoices.map((i) => ({
+    invoice: i.invoice_number,
+    date: new Date(i.date).toLocaleDateString("en-IN"),
+    total: `₹${i.grand_total.toLocaleString("en-IN")}`,
+    status: i.status,
+  }));
 
-      <div className="bg-white border border-graylight rounded-2xl p-6 mb-10">
-        <p className="text-sm text-navy/60 mb-1">Current Status</p>
+  return (
+    <section className="max-w-4xl mx-auto px-6 py-16 bg-warmwhite">
+      <h1 className="text-2xl font-semibold text-navy mb-2">My Project</h1>
+      <p className="text-sm text-navy/50 mb-8">Track your invoices and project status here.</p>
+
+      <div className="bg-white border-l-4 border-gold rounded-r-2xl p-6 mb-10 shadow-sm">
+        <p className="text-sm text-navy/50 mb-1">Current Status</p>
         <p className="text-xl font-semibold text-navy">In Progress — Site Measurement Complete</p>
       </div>
 
       <h2 className="text-lg font-medium text-navy mb-4">My Invoices</h2>
-      <DataTable
-        columns={[
+      {loading ? (
+        <p className="text-navy/40">Loading...</p>
+      ) : (
+        <DataTable columns={[
           { key: "invoice", label: "Invoice #" },
           { key: "date", label: "Date" },
           { key: "total", label: "Total" },
           { key: "status", label: "Status" },
-        ]}
-        rows={myInvoices}
-      />
+        ]} rows={rows} />
+      )}
     </section>
   );
 }

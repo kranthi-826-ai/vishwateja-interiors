@@ -13,7 +13,7 @@ export default function DataTable({
         <thead>
           <tr className="bg-navy text-white">
             {columns.map((c) => (
-              <th key={c.key} className="text-left px-5 py-3 font-medium">
+              <th key={c.key} className="text-left px-5 py-3.5 font-medium tracking-wide text-xs uppercase text-white/70">
                 {c.label}
               </th>
             ))}
@@ -22,15 +22,15 @@ export default function DataTable({
         <tbody>
           {rows.length === 0 ? (
             <tr>
-              <td colSpan={columns.length} className="text-center py-10 text-navy/40">
-                No records yet.
+              <td colSpan={columns.length} className="text-center py-14 text-navy/30">
+                <p className="text-sm">No records yet</p>
               </td>
             </tr>
           ) : (
             rows.map((row, i) => (
-              <tr key={i} className="border-t border-graylight hover:bg-graylight/30 transition-colors duration-200">
+              <tr key={i} className="border-t border-graylight hover:bg-gold/5 transition-colors duration-200">
                 {columns.map((c) => (
-                  <td key={c.key} className="px-5 py-3 text-navy/80">
+                  <td key={c.key} className="px-5 py-3.5 text-navy/80">
                     {row[c.key]}
                   </td>
                 ))}

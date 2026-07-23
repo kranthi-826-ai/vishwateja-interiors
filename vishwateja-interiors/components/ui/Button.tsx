@@ -10,8 +10,8 @@ type ButtonProps = {
 };
 
 const styles = {
-  primary: "bg-navy text-white hover:bg-royal",
-  outline: "border border-navy text-navy hover:bg-navy hover:text-white",
+  primary: "bg-navy text-gold hover:bg-goldDark hover:text-white",
+  outline: "border border-gold/50 text-gold hover:bg-gold/10",
   light: "bg-white text-navy hover:bg-graylight",
 };
 
@@ -22,7 +22,7 @@ export default function Button({
   variant = "primary",
   type = "button",
 }: ButtonProps) {
-  const classes = `px-6 py-3 rounded-full font-medium transition-colors duration-300 ${styles[variant]}`;
+  const classes = `px-6 py-3 rounded-full font-medium transition-all duration-300 hover:scale-105 active:scale-95 ${styles[variant]}`;
 
   if (href) {
     return (
