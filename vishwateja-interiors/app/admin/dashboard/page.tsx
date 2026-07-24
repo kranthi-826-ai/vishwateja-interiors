@@ -34,16 +34,16 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-navy">Dashboard</h1>
-        <p className="text-sm text-navy/50 mt-1">Welcome back — here's what's happening today.</p>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold text-navy">Executive Overview</h1>
+        <p className="text-xs text-navy/50 mt-1 font-light">Welcome back — here is your real-time studio financial summary.</p>
       </div>
 
       <div className="grid sm:grid-cols-3 gap-6">
         <StatCard label="This Month's Invoiced" value={stats.monthlyInvoiced} />
-        <StatCard label="Pending Payments" value={stats.pending} />
-        <StatCard label="Total Leads" value={stats.recentLeads} />
+        <StatCard label="Pending Revenue" value={stats.pending} />
+        <StatCard label="Total Leads Captured" value={stats.recentLeads} />
       </div>
     </div>
   );

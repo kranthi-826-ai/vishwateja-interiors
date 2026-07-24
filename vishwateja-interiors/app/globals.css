@@ -1,8 +1,185 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ═══════════════════════════════════════════════════
+   VISHWATEJA INTERIORS — Luxury Design System
+   ═══════════════════════════════════════════════════ */
+
+:root {
+  /* Brand palette */
+  --navy: #041B5E;
+  --royal: #0A2D89;
+  --gold: #C89B3C;
+  --gold-dark: #B8860B;
+  --warm-white: #FCFBF8;
+  --soft-gray: #F5F6F8;
+  --gray-light: #E9E6DF;
+
+  /* Luxury gradients */
+  --gradient-gold: linear-gradient(135deg, #C89B3C 0%, #E8C872 50%, #B8860B 100%);
+  --gradient-navy: linear-gradient(135deg, #041B5E 0%, #0A2D89 100%);
+  --gradient-glass: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+
+  /* Premium shadows */
+  --shadow-sm: 0 2px 8px rgba(4, 27, 94, 0.06);
+  --shadow-md: 0 8px 30px rgba(4, 27, 94, 0.08);
+  --shadow-lg: 0 20px 60px rgba(4, 27, 94, 0.12);
+  --shadow-gold: 0 8px 30px rgba(200, 155, 60, 0.2);
+  --shadow-glow: 0 0 40px rgba(200, 155, 60, 0.15);
+
+  /* Timing */
+  --ease-luxury: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── Smooth scroll ── */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Base body ── */
 body {
-  @apply bg-white text-navy;
+  @apply bg-warmwhite text-navy;
+  font-family: 'Inter', 'Poppins', sans-serif;
+  overflow-x: hidden;
+}
+
+/* ── Typography hierarchy ── */
+h1, h2, h3, h4 {
+  font-family: 'Playfair Display', 'Poppins', serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+/* ── Premium scrollbar ── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--warm-white);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--gray-light);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold);
+}
+
+/* ── Selection ── */
+::selection {
+  background: rgba(200, 155, 60, 0.2);
+  color: var(--navy);
+}
+
+/* ═══════════════════════════════════════════════════
+   ANIMATION KEYFRAMES
+   ═══════════════════════════════════════════════════ */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInBlur {
+  from { opacity: 0; filter: blur(10px); transform: translateY(20px); }
+  to { opacity: 1; filter: blur(0); transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(200, 155, 60, 0.1); }
+  50% { box-shadow: 0 0 40px rgba(200, 155, 60, 0.3); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes rotate-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes draw-line {
+  from { width: 0; }
+  to { width: 60px; }
+}
+
+/* ── Ripple effect ── */
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* ── Luxury separator line ── */
+.luxury-separator {
+  width: 60px;
+  height: 2px;
+  background: var(--gradient-gold);
+  border-radius: 99px;
+  animation: draw-line 1s var(--ease-luxury) forwards;
+}
+
+/* ── Glass morphism utility ── */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-dark {
+  background: rgba(4, 27, 94, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ── Gold gradient text ── */
+.text-gradient-gold {
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Animated gold border ── */
+.border-gold-animated {
+  position: relative;
+}
+.border-gold-animated::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, transparent 30%, var(--gold) 50%, transparent 70%);
+  background-size: 300% 300%;
+  animation: shimmer 4s linear infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }

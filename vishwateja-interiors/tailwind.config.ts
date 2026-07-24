@@ -7,8 +7,8 @@ const config: Config = {
       colors: {
         navy: "#041B5E",
         royal: "#0A2D89",
-        gold: "#b18829ff",
-        goldDark: "#B8860B",
+        gold: "#D4AF37",
+        goldDark: "#e0bb5bff",
         warmwhite: "#FCFBF8",
         graylight: "#E9E6DF",
       },

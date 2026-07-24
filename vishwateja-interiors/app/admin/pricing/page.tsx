@@ -35,32 +35,39 @@ export default function PricingPage() {
     setSaved(true);
   };
 
-  if (loading) return <p className="text-navy/50">Loading rates...</p>;
+  if (loading) return <p className="text-xs text-navy/50">Loading base rate configurations...</p>;
 
   return (
-    <div>
-      <h1 className="text-2xl font-semibold text-navy mb-2">Pricing</h1>
-      <p className="text-sm text-navy/60 mb-8">
-        Update base rates daily — changes reflect instantly on the public Cost Estimator.
-      </p>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold text-navy">Base Pricing Configurator</h1>
+        <p className="text-xs text-navy/60 mt-1 font-light">
+          Update base rates per sqft/unit — changes propagate live to the public Cost Estimator.
+        </p>
+      </div>
 
-      <div className="bg-white border border-graylight rounded-2xl p-6 max-w-lg space-y-4">
+      <div className="bg-white border border-graylight/80 rounded-3xl p-8 max-w-xl space-y-4 shadow-lg">
         {rates.map((r) => (
-          <div key={r.id} className="flex items-center justify-between">
-            <label className="text-sm text-navy">{r.service_name}</label>
-            <input
-              type="number"
-              value={r.rate}
-              onChange={(e) => updateRate(r.id, e.target.value)}
-              className="w-32 border border-graylight rounded-lg px-3 py-2 text-right focus:outline-none focus:border-royal"
-            />
+          <div key={r.id} className="flex items-center justify-between py-2 border-b border-graylight/30 last:border-0">
+            <label className="text-xs sm:text-sm font-medium text-navy">{r.service_name}</label>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-navy/50">₹</span>
+              <input
+                type="number"
+                value={r.rate}
+                onChange={(e) => updateRate(r.id, e.target.value)}
+                className="w-36 border border-graylight/80 rounded-xl px-4 py-2 text-right text-xs font-semibold focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20"
+              />
+            </div>
           </div>
         ))}
       </div>
 
-      <div className="mt-6 flex items-center gap-4">
-        <Button onClick={handleSave}>Save Rates</Button>
-        {saved && <span className="text-sm text-green-600">✓ Saved</span>}
+      <div className="pt-2 flex items-center gap-4">
+        <Button onClick={handleSave} variant="primary" className="px-8">
+          Save All Rates
+        </Button>
+        {saved && <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">✓ Pricing Saved & Live</span>}
       </div>
     </div>
   );

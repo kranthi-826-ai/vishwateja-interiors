@@ -8,37 +8,39 @@ export default function DataTable({
   rows: Record<string, string>[];
 }) {
   return (
-    <div className="bg-white border border-graylight rounded-2xl overflow-hidden">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="bg-navy text-white">
-            {columns.map((c) => (
-              <th key={c.key} className="text-left px-5 py-3.5 font-medium tracking-wide text-xs uppercase text-white/70">
-                {c.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.length === 0 ? (
-            <tr>
-              <td colSpan={columns.length} className="text-center py-14 text-navy/30">
-                <p className="text-sm">No records yet</p>
-              </td>
+    <div className="bg-white border border-graylight/80 rounded-3xl overflow-hidden shadow-lg">
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="bg-navy text-white">
+              {columns.map((c) => (
+                <th key={c.key} className="text-left px-6 py-4 font-medium tracking-wider text-xs uppercase text-white/70">
+                  {c.label}
+                </th>
+              ))}
             </tr>
-          ) : (
-            rows.map((row, i) => (
-              <tr key={i} className="border-t border-graylight hover:bg-gold/5 transition-colors duration-200">
-                {columns.map((c) => (
-                  <td key={c.key} className="px-5 py-3.5 text-navy/80">
-                    {row[c.key]}
-                  </td>
-                ))}
+          </thead>
+          <tbody className="divide-y divide-graylight/40">
+            {rows.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length} className="text-center py-16 text-navy/30">
+                  <p className="text-sm font-light">No records found</p>
+                </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              rows.map((row, i) => (
+                <tr key={i} className="hover:bg-gold/5 transition-colors duration-200">
+                  {columns.map((c) => (
+                    <td key={c.key} className="px-6 py-4 text-navy/80 font-light text-xs sm:text-sm">
+                      {row[c.key]}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
