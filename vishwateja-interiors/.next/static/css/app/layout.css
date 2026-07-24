@@ -590,9 +590,6 @@ video {
 .h-full{
   height: 100%;
 }
-.h-24{
-  height: 6rem;
-}
 .max-h-0{
   max-height: 0px;
 }
@@ -809,14 +806,13 @@ video {
   border-style: none;
 }
 .border-gold{
-  --tw-border-opacity: 1;
-  border-color: rgb(200 155 60 / var(--tw-border-opacity, 1));
+  border-color: #b18829ff;
 }
 .border-gold\/20{
-  border-color: rgb(200 155 60 / 0.2);
+  border-color: rgb(177 136 41 / 0.2);
 }
 .border-gold\/50{
-  border-color: rgb(200 155 60 / 0.5);
+  border-color: rgb(177 136 41 / 0.5);
 }
 .border-graylight{
   --tw-border-opacity: 1;
@@ -838,14 +834,13 @@ video {
   background-color: rgb(37 211 102 / var(--tw-bg-opacity, 1));
 }
 .bg-gold{
-  --tw-bg-opacity: 1;
-  background-color: rgb(200 155 60 / var(--tw-bg-opacity, 1));
+  background-color: #b18829ff;
 }
 .bg-gold\/15{
-  background-color: rgb(200 155 60 / 0.15);
+  background-color: rgb(177 136 41 / 0.15);
 }
 .bg-gold\/20{
-  background-color: rgb(200 155 60 / 0.2);
+  background-color: rgb(177 136 41 / 0.2);
 }
 .bg-graylight{
   --tw-bg-opacity: 1;
@@ -1084,8 +1079,7 @@ video {
   letter-spacing: 0.1em;
 }
 .text-gold{
-  --tw-text-opacity: 1;
-  color: rgb(200 155 60 / var(--tw-text-opacity, 1));
+  color: #b18829ff;
 }
 .text-goldDark{
   --tw-text-opacity: 1;
@@ -1181,10 +1175,10 @@ video {
   box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
 }
 .ring-gold\/10{
-  --tw-ring-color: rgb(200 155 60 / 0.1);
+  --tw-ring-color: rgb(177 136 41 / 0.1);
 }
 .ring-gold\/20{
-  --tw-ring-color: rgb(200 155 60 / 0.2);
+  --tw-ring-color: rgb(177 136 41 / 0.2);
 }
 .ring-transparent{
   --tw-ring-color: transparent;
@@ -1266,20 +1260,19 @@ body{
 }
 
 .hover\:border-gold:hover{
-  --tw-border-opacity: 1;
-  border-color: rgb(200 155 60 / var(--tw-border-opacity, 1));
+  border-color: #b18829ff;
 }
 
 .hover\:border-gold\/40:hover{
-  border-color: rgb(200 155 60 / 0.4);
+  border-color: rgb(177 136 41 / 0.4);
 }
 
 .hover\:bg-gold\/10:hover{
-  background-color: rgb(200 155 60 / 0.1);
+  background-color: rgb(177 136 41 / 0.1);
 }
 
 .hover\:bg-gold\/5:hover{
-  background-color: rgb(200 155 60 / 0.05);
+  background-color: rgb(177 136 41 / 0.05);
 }
 
 .hover\:bg-goldDark:hover{
@@ -1315,8 +1308,7 @@ body{
 }
 
 .hover\:text-gold:hover{
-  --tw-text-opacity: 1;
-  color: rgb(200 155 60 / var(--tw-text-opacity, 1));
+  color: #b18829ff;
 }
 
 .hover\:text-goldDark:hover{
@@ -1357,12 +1349,11 @@ body{
 }
 
 .hover\:ring-gold\/40:hover{
-  --tw-ring-color: rgb(200 155 60 / 0.4);
+  --tw-ring-color: rgb(177 136 41 / 0.4);
 }
 
 .focus\:border-gold:focus{
-  --tw-border-opacity: 1;
-  border-color: rgb(200 155 60 / var(--tw-border-opacity, 1));
+  border-color: #b18829ff;
 }
 
 .focus\:border-royal:focus{
@@ -1382,7 +1373,7 @@ body{
 }
 
 .focus\:ring-gold\/20:focus{
-  --tw-ring-color: rgb(200 155 60 / 0.2);
+  --tw-ring-color: rgb(177 136 41 / 0.2);
 }
 
 .active\:scale-95:active{
