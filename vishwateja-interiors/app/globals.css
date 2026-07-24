@@ -42,7 +42,8 @@ html {
 
 /* ── Base body ── */
 body {
-  @apply bg-warmwhite text-navy;
+  background-color: var(--warm-white);
+  color: var(--navy);
   font-family: 'Inter', 'Poppins', sans-serif;
   overflow-x: hidden;
 }

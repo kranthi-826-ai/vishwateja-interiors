@@ -21,7 +21,7 @@ export default function Hero() {
       className="relative bg-navy text-white min-h-[90vh] pt-32 pb-24 overflow-hidden flex items-center"
     >
       {/* Background Architectural Patterns & Ambient Lighting */}
-      <div className="absolute inset-0 pointer-events-none opacity-30">
+      <div className="absolute inset-0 pointer-events-none opacity-20">
         <div
           className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-royal rounded-full blur-[140px] transition-transform duration-700 ease-out"
           style={{ transform: `translate(${mousePos.x * 40}px, ${mousePos.y * 40}px)` }}

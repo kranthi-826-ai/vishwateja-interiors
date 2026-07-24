@@ -2,6 +2,7 @@ import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/layout/WhatsAppButton";
+import AdaptiveCanvasBackground from "@/components/ui/AdaptiveCanvasBackground";
 
 export const metadata = {
   title: "VISHWATEJA INTERIORS | Machine-Crafted Precision. Timeless Interior Excellence.",
@@ -20,9 +21,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body className="antialiased">
+      <body className="antialiased relative bg-warmwhite text-navy selection:bg-gold/20 selection:text-navy">
+        <AdaptiveCanvasBackground />
         <Navbar />
-        <main>{children}</main>
+        <main className="relative z-10">{children}</main>
         <Footer />
         <WhatsAppButton />
       </body>
