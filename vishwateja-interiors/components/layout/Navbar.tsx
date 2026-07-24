@@ -18,10 +18,12 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-50 bg-warmwhite/90 backdrop-blur border-b border-graylight">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
-        <Link href="/">
-          <Logo height={80} />
+    <header className="sticky top-0 z-50 bg-warmwhite/90 backdrop-blur border-b border-graylight overflow-visible">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 h-20">
+        {/* Logo is taller than the navbar; negative vertical margin lets it overflow
+            top/bottom without stretching the header's own height */}
+        <Link href="/" className="flex items-center -my-6">
+          <Logo height={130} />
         </Link>
 
         <nav className="hidden md:flex gap-8 text-sm font-medium text-navy">
@@ -29,9 +31,8 @@ export default function Navbar() {
             <Link key={l.href} href={l.href} className="relative group py-1">
               {l.label}
               <span
-                className={`absolute left-0 -bottom-0.5 h-0.5 bg-gold transition-all duration-300 ${
-                  pathname === l.href ? "w-full" : "w-0 group-hover:w-full"
-                }`}
+                className={`absolute left-0 -bottom-0.5 h-0.5 bg-gold transition-all duration-300 ${pathname === l.href ? "w-full" : "w-0 group-hover:w-full"
+                  }`}
               />
             </Link>
           ))}
@@ -54,9 +55,8 @@ export default function Navbar() {
       </div>
 
       <nav
-        className={`md:hidden flex flex-col gap-4 px-6 text-navy overflow-hidden transition-all duration-300 ${
-          open ? "max-h-96 pb-6" : "max-h-0"
-        }`}
+        className={`md:hidden flex flex-col gap-4 px-6 text-navy overflow-hidden transition-all duration-300 bg-warmwhite ${open ? "max-h-96 pb-6 pt-2" : "max-h-0"
+          }`}
       >
         {links.map((l) => (
           <Link key={l.href} href={l.href} onClick={() => setOpen(false)}>
