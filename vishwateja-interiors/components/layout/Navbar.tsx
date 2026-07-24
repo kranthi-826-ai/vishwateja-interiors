@@ -23,7 +23,7 @@ export default function Navbar() {
         {/* Logo is taller than the navbar; negative vertical margin lets it overflow
             top/bottom without stretching the header's own height */}
         <Link href="/" className="flex items-center -my-6">
-          <Logo height={130} />
+          <Logo height={110} />
         </Link>
 
         <nav className="hidden md:flex gap-8 text-sm font-medium text-navy">
