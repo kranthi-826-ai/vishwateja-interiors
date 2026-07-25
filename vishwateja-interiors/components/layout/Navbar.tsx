@@ -73,7 +73,7 @@ export default function Navbar() {
         <div className="hidden md:flex items-center gap-4">
           <a
             href="tel:9885034309"
-            className="relative overflow-hidden bg-navy text-gold px-6 py-2.5 rounded-full text-sm font-medium border border-gold/30 shadow-sm hover:shadow-lg hover:bg-royal hover:text-white transition-all duration-300 hover:scale-105 active:scale-95"
+            className="relative overflow-hidden bg-gradient-to-r from-gold via-[#E8C872] to-goldDark text-navy px-6 py-2.5 rounded-full text-sm font-bold border border-gold/60 shadow-[0_3px_15px_rgba(200,155,60,0.4)] hover:shadow-[0_5px_25px_rgba(200,155,60,0.6)] hover:scale-105 active:scale-95 transition-all duration-300"
           >
             Call Now
           </a>

@@ -1,7 +1,6 @@
 "use client";
 import Link from "next/link";
 import Reveal from "@/components/ui/Reveal";
-import Button from "@/components/ui/Button";
 import { useState, MouseEvent } from "react";
 import { motion } from "framer-motion";
 
@@ -61,12 +60,23 @@ export default function Hero() {
             </p>
 
             <div className="flex flex-wrap items-center gap-4 mb-14">
-              <Button href="tel:9885034309" variant="primary" className="text-base px-8 py-4">
-                Call Now (9885034309)
-              </Button>
-              <Button href="/get-quote" variant="outline" className="text-base px-8 py-4">
-                Get Free Estimate →
-              </Button>
+              <a
+                href="tel:9885034309"
+                className="relative overflow-hidden inline-flex items-center justify-center px-8 py-4 rounded-full font-semibold text-base tracking-wide transition-all duration-500 ease-out hover:scale-[1.05] active:scale-[0.97] focus:outline-none focus:ring-2 focus:ring-gold/50 focus:ring-offset-2 bg-gradient-to-r from-gold via-[#E8C872] to-goldDark text-navy shadow-[0_4px_25px_rgba(200,155,60,0.5)] hover:shadow-[0_6px_35px_rgba(200,155,60,0.7)] border border-gold/60"
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 11.36 11.36 0 003.58.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.58 1 1 0 01-.25 1.01l-2.2 2.2z"/>
+                  </svg>
+                  Call Now (9885034309)
+                </span>
+              </a>
+              <a
+                href="/get-quote"
+                className="relative overflow-hidden inline-flex items-center justify-center px-8 py-4 rounded-full font-semibold text-base tracking-wide transition-all duration-500 ease-out hover:scale-[1.05] active:scale-[0.97] focus:outline-none focus:ring-2 focus:ring-gold/50 focus:ring-offset-2 bg-white/10 text-white border-2 border-white/60 shadow-[0_4px_20px_rgba(255,255,255,0.15)] hover:bg-white/20 hover:border-white hover:shadow-[0_6px_30px_rgba(255,255,255,0.25)] backdrop-blur-sm"
+              >
+                <span className="relative z-10">Get Free Estimate →</span>
+              </a>
             </div>
 
             {/* Counter Stats */}
