@@ -3,8 +3,9 @@ import { useEffect, useRef, useState } from "react";
 
 export default function AdaptiveCanvasBackground() {
   const [mounted, setMounted] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
+  const [isInteracting, setIsInteracting] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const hideTimerRef = useRef<NodeJS.Timeout | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const vantaInstance = useRef<any>(null);
 
@@ -12,31 +13,54 @@ export default function AdaptiveCanvasBackground() {
     setMounted(true);
   }, []);
 
-  // One-time entrance effect: permanently fades out on the user's FIRST scroll, touch, or click interaction
+  // Fade out birds upon touch/click/scroll/type and restore after 1 minute (60,000ms) of inactivity
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const handleFirstInteraction = () => {
-      setDismissed(true);
-      removeAllListeners();
+    const isInputField = (element: Element | null) => {
+      if (!element) return false;
+      const tagName = element.tagName.toLowerCase();
+      return (
+        tagName === "input" ||
+        tagName === "textarea" ||
+        tagName === "select" ||
+        (element as HTMLElement).isContentEditable
+      );
     };
 
-    const removeAllListeners = () => {
-      window.removeEventListener("scroll", handleFirstInteraction);
-      window.removeEventListener("mousedown", handleFirstInteraction);
-      window.removeEventListener("touchstart", handleFirstInteraction);
-      window.removeEventListener("keydown", handleFirstInteraction);
-      window.removeEventListener("wheel", handleFirstInteraction);
+    const triggerHide = (durationMs = 60000) => {
+      setIsInteracting(true);
+      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+
+      hideTimerRef.current = setTimeout(() => {
+        // Only bring birds back if user is not currently focused on an active form input
+        if (!isInputField(document.activeElement)) {
+          setIsInteracting(false);
+        } else {
+          // If still focused, re-check in 5 seconds
+          triggerHide(5000);
+        }
+      }, durationMs);
     };
 
-    window.addEventListener("scroll", handleFirstInteraction, { passive: true });
-    window.addEventListener("mousedown", handleFirstInteraction, { passive: true });
-    window.addEventListener("touchstart", handleFirstInteraction, { passive: true });
-    window.addEventListener("keydown", handleFirstInteraction, { passive: true });
-    window.addEventListener("wheel", handleFirstInteraction, { passive: true });
+    // 1-minute (60,000ms) hide trigger on interaction
+    const handleUserInteraction = () => {
+      triggerHide(60000);
+    };
+
+    window.addEventListener("mousedown", handleUserInteraction, { passive: true });
+    window.addEventListener("touchstart", handleUserInteraction, { passive: true });
+    window.addEventListener("keydown", handleUserInteraction, { passive: true });
+    window.addEventListener("scroll", handleUserInteraction, { passive: true });
+    window.addEventListener("wheel", handleUserInteraction, { passive: true });
 
     return () => {
-      removeAllListeners();
+      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
+      window.removeEventListener("mousedown", handleUserInteraction);
+      window.removeEventListener("touchstart", handleUserInteraction);
+      window.removeEventListener("keydown", handleUserInteraction);
+      window.removeEventListener("scroll", handleUserInteraction);
+      window.removeEventListener("wheel", handleUserInteraction);
     };
   }, []);
 
@@ -151,7 +175,7 @@ export default function AdaptiveCanvasBackground() {
     <div
       ref={containerRef}
       className={`fixed inset-0 z-20 w-full h-full pointer-events-none overflow-hidden transition-opacity duration-700 ${
-        dismissed ? "opacity-0 invisible" : "opacity-100 visible"
+        isInteracting ? "opacity-0 invisible" : "opacity-100 visible"
       }`}
       aria-hidden="true"
     />
