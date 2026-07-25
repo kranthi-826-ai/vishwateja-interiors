@@ -1,4 +1,12 @@
+"use client";
+import { usePathname } from "next/navigation";
+
 export default function WhatsAppButton() {
+  const pathname = usePathname();
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
+
   const message = encodeURIComponent(
     "Hi, I'm interested in interior design services from Vishwateja Interiors."
   );

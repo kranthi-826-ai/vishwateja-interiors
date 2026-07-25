@@ -30,9 +30,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!checked) return null;
 
   return (
-    <div className="flex">
+    <div className="min-h-screen flex flex-col md:flex-row bg-graylight/30">
       <Sidebar />
-      <main className="flex-1 bg-graylight/30 min-h-screen p-8">{children}</main>
+      <main className="flex-1 w-full p-4 sm:p-8 overflow-x-hidden">{children}</main>
     </div>
   );
 }

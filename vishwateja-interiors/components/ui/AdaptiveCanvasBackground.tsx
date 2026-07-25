@@ -3,9 +3,8 @@ import { useEffect, useRef, useState } from "react";
 
 export default function AdaptiveCanvasBackground() {
   const [mounted, setMounted] = useState(false);
-  const [isInteracting, setIsInteracting] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const hideTimerRef = useRef<NodeJS.Timeout | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const vantaInstance = useRef<any>(null);
 
@@ -13,76 +12,31 @@ export default function AdaptiveCanvasBackground() {
     setMounted(true);
   }, []);
 
-  // Event listener to hide birds when typing, clicking, or focusing inputs
+  // One-time entrance effect: permanently fades out on the user's FIRST scroll, touch, or click interaction
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const isInputField = (element: Element | null) => {
-      if (!element) return false;
-      const tagName = element.tagName.toLowerCase();
-      return (
-        tagName === "input" ||
-        tagName === "textarea" ||
-        tagName === "select" ||
-        (element as HTMLElement).isContentEditable
-      );
+    const handleFirstInteraction = () => {
+      setDismissed(true);
+      removeAllListeners();
     };
 
-    const triggerHide = (durationMs = 2500) => {
-      setIsInteracting(true);
-      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
-
-      hideTimerRef.current = setTimeout(() => {
-        // Only show birds again if the user is not currently focused on a form input
-        if (!isInputField(document.activeElement)) {
-          setIsInteracting(false);
-        } else {
-          triggerHide(1500);
-        }
-      }, durationMs);
+    const removeAllListeners = () => {
+      window.removeEventListener("scroll", handleFirstInteraction);
+      window.removeEventListener("mousedown", handleFirstInteraction);
+      window.removeEventListener("touchstart", handleFirstInteraction);
+      window.removeEventListener("keydown", handleFirstInteraction);
+      window.removeEventListener("wheel", handleFirstInteraction);
     };
 
-    // Hide birds on mouse click, touch, or tap
-    const handlePointerOrClick = () => {
-      triggerHide(2000);
-    };
-
-    // Hide birds when typing or keypresses occur
-    const handleKeyOrInput = () => {
-      triggerHide(3000);
-    };
-
-    // Hide birds when focusing an input field
-    const handleFocusIn = (e: FocusEvent) => {
-      if (isInputField(e.target as Element)) {
-        triggerHide(4000);
-      }
-    };
-
-    const handleFocusOut = () => {
-      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
-      hideTimerRef.current = setTimeout(() => {
-        if (!isInputField(document.activeElement)) {
-          setIsInteracting(false);
-        }
-      }, 500);
-    };
-
-    window.addEventListener("mousedown", handlePointerOrClick, { passive: true });
-    window.addEventListener("touchstart", handlePointerOrClick, { passive: true });
-    window.addEventListener("keydown", handleKeyOrInput, { passive: true });
-    window.addEventListener("input", handleKeyOrInput, { passive: true });
-    window.addEventListener("focusin", handleFocusIn, { passive: true });
-    window.addEventListener("focusout", handleFocusOut, { passive: true });
+    window.addEventListener("scroll", handleFirstInteraction, { passive: true });
+    window.addEventListener("mousedown", handleFirstInteraction, { passive: true });
+    window.addEventListener("touchstart", handleFirstInteraction, { passive: true });
+    window.addEventListener("keydown", handleFirstInteraction, { passive: true });
+    window.addEventListener("wheel", handleFirstInteraction, { passive: true });
 
     return () => {
-      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
-      window.removeEventListener("mousedown", handlePointerOrClick);
-      window.removeEventListener("touchstart", handlePointerOrClick);
-      window.removeEventListener("keydown", handleKeyOrInput);
-      window.removeEventListener("input", handleKeyOrInput);
-      window.removeEventListener("focusin", handleFocusIn);
-      window.removeEventListener("focusout", handleFocusOut);
+      removeAllListeners();
     };
   }, []);
 
@@ -153,14 +107,14 @@ export default function AdaptiveCanvasBackground() {
           scale: 1.0,
           scaleMobile: 1.0,
           backgroundColor: 0x041b5e,     // Vishwateja Navy
-          backgroundAlpha: 0.0,          // Transparent background so birds float everywhere across all sections
+          backgroundAlpha: 0.0,          // Transparent background so birds float over initial viewport
           color1: 0xd4af37,              // Luxury Gold
           color2: 0x38bdf8,              // Soft Sky Cyan
           colorMode: "varianceGradient",
           quantity: 4.0,                 // Elegant density
-          birdSize: 0.85,                // Refined bird size for global viewing
+          birdSize: 0.85,                // Refined bird size
           wingSpan: 24.0,                // Refined wingspan
-          speedLimit: 4.2,               // Smooth graceful flight
+          speedLimit: 4.2,               // Smooth flight
           separation: 24.0,
           alignment: 20.0,
           cohesion: 20.0,
@@ -197,7 +151,7 @@ export default function AdaptiveCanvasBackground() {
     <div
       ref={containerRef}
       className={`fixed inset-0 z-20 w-full h-full pointer-events-none overflow-hidden transition-opacity duration-700 ${
-        isInteracting ? "opacity-0 invisible" : "opacity-100 visible"
+        dismissed ? "opacity-0 invisible" : "opacity-100 visible"
       }`}
       aria-hidden="true"
     />
