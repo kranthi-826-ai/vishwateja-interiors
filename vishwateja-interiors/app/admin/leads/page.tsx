@@ -7,7 +7,13 @@ type Lead = {
   id: string;
   name: string;
   mobile: string;
+  email?: string;
   service: string;
+  home_type?: string;
+  material_quality?: string;
+  budget_range?: string;
+  pincode?: string;
+  verified?: boolean;
   message: string;
   created_at: string;
 };
@@ -29,24 +35,28 @@ export default function LeadsPage() {
 
   const rows = leads.map((l) => ({
     name: l.name,
-    mobile: l.mobile,
-    service: l.service || "-",
+    contact: `${l.mobile}${l.email ? ` | ${l.email}` : ""}`,
+    type: l.home_type ? `${l.home_type} (${l.material_quality || "Std"})` : (l.service || "-"),
+    budget: l.budget_range || "-",
+    verified: l.verified ? "✅ Yes" : "Unverified",
     message: l.message || "-",
     date: new Date(l.created_at).toLocaleDateString("en-IN"),
   }));
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-navy mb-6">Leads</h1>
+      <h1 className="text-2xl font-semibold text-navy mb-6">Leads & Enquiries</h1>
       {loading ? (
         <p className="text-navy/50">Loading leads...</p>
       ) : (
         <DataTable
           columns={[
             { key: "name", label: "Name" },
-            { key: "mobile", label: "Mobile" },
-            { key: "service", label: "Service" },
-            { key: "message", label: "Message" },
+            { key: "contact", label: "Contact (Mobile / Email)" },
+            { key: "type", label: "Home & Scope" },
+            { key: "budget", label: "Budget Range" },
+            { key: "verified", label: "OTP Status" },
+            { key: "message", label: "Details / Message" },
             { key: "date", label: "Date" },
           ]}
           rows={rows}
@@ -54,4 +64,4 @@ export default function LeadsPage() {
       )}
     </div>
   );
-}
+}

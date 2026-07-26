@@ -1,4 +1,4 @@
-import Button from "@/components/ui/Button";
+import QuoteWizard from "@/components/estimator/QuoteWizard";
 import Reveal from "@/components/ui/Reveal";
 
 export default function ContactPage() {
@@ -17,58 +17,11 @@ export default function ContactPage() {
           </div>
         </Reveal>
 
-        <div className="grid md:grid-cols-12 gap-12 items-start">
-          {/* Form */}
-          <div className="md:col-span-7">
+        <div className="grid lg:grid-cols-12 gap-12 items-start">
+          {/* Form / Quote Wizard Column */}
+          <div className="lg:col-span-7">
             <Reveal variant="fadeLeft">
-              <form
-                className="space-y-6 bg-white border border-graylight/80 rounded-3xl p-8 sm:p-10 shadow-xl hover:border-gold/30 transition-all duration-500"
-                action="/api/leads"
-                method="POST"
-              >
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-navy mb-2">
-                    Full Name *
-                  </label>
-                  <input
-                    name="name"
-                    required
-                    placeholder="Enter your full name"
-                    className="w-full border border-graylight rounded-xl px-5 py-3.5 text-sm text-navy bg-warmwhite/50 focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all duration-300"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-navy mb-2">
-                    Mobile Number *
-                  </label>
-                  <input
-                    name="mobile"
-                    required
-                    placeholder="Enter 10-digit mobile number"
-                    className="w-full border border-graylight rounded-xl px-5 py-3.5 text-sm text-navy bg-warmwhite/50 focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all duration-300"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-navy mb-2">
-                    Project Requirements
-                  </label>
-                  <textarea
-                    name="message"
-                    rows={4}
-                    placeholder="Tell us about your home floor plan, timeline, or specific requirements..."
-                    className="w-full border border-graylight rounded-xl px-5 py-3.5 text-sm text-navy bg-warmwhite/50 focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20 transition-all duration-300"
-                  />
-                </div>
-
-                {/* Anti-spam honeypot */}
-                <input type="text" name="website" style={{ display: "none" }} tabIndex={-1} autoComplete="off" />
-
-                <Button type="submit" variant="primary" className="w-full py-4 text-base">
-                  Send Consultation Request →
-                </Button>
-              </form>
+              <QuoteWizard />
             </Reveal>
           </div>
 
