@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import Button from "@/components/ui/Button";
@@ -58,26 +58,29 @@ const REQUIREMENT_TYPES = [
 
 const MATERIAL_TIERS = [
   {
-    id: "Essential",
+    id: "Essential (Tier 1)",
+    tier: "Tier 1 — Standard Quality",
     name: "Essential",
     subtitle: "Best Value for Smart Budgets",
-    desc: "Standard BWP-grade plywood, durable laminate finishes, quality standard hardware. Clean and functional finish.",
-    badge: "Cost-Effective",
+    desc: "Standard BWP-grade plywood, durable laminate finishes, quality standard hardware. Clean, durable and functional finish.",
+    badge: "Tier 1 - Value",
   },
   {
-    id: "Premium",
+    id: "Premium (Tier 2)",
+    tier: "Tier 2 — Medium / High Quality",
     name: "Premium",
     subtitle: "Our Most Popular Choice",
     desc: "Higher-grade calibrated plywood, premium laminates/veneers, soft-close hardware & acrylic accents.",
-    badge: "Most Popular",
+    badge: "Tier 2 - Popular",
     featured: true,
   },
   {
-    id: "Luxury",
+    id: "Luxury (Tier 3)",
+    tier: "Tier 3 — Bespoke Ultra-High Quality",
     name: "Luxury",
     subtitle: "Bespoke & Uncompromising",
     desc: "Top-grade core materials, designer veneer/lacquered glass, imported hardware & custom architectural detailing.",
-    badge: "Ultimate Finish",
+    badge: "Tier 3 - Luxury",
   },
 ];
 
@@ -165,18 +168,28 @@ export default function QuoteWizard() {
   const [data, setData] = useState<WizardData>(initialWizardData);
   const [validationError, setValidationError] = useState("");
 
-  // OTP Verification States (Phase 3 & 4)
+  // OTP Verification States
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState(["", "", "", "", "", ""]);
   const [otpLoading, setOtpLoading] = useState(false);
   const [otpError, setOtpError] = useState("");
   const [resendCooldown, setResendCooldown] = useState(0);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Final Submission States
   const [submitting, setSubmitting] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
 
   const TOTAL_WIZARD_STEPS = 6;
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, []);
 
   // Navigation Logic & Validation
   const handleNext = async () => {
@@ -235,12 +248,13 @@ export default function QuoteWizard() {
     setValidationError("");
     if (otpSent) {
       setOtpSent(false);
+      setOtpCode(["", "", "", "", "", ""]);
       return;
     }
     setStep((prev) => Math.max(prev - 1, 1));
   };
 
-  // Phase 3 — OTP Sending Logic
+  // OTP Sending Logic
   const triggerSendOtp = async () => {
     setOtpLoading(true);
     setOtpError("");
@@ -266,11 +280,14 @@ export default function QuoteWizard() {
   };
 
   const startCooldownTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
     setResendCooldown(30);
-    const timer = setInterval(() => {
+    timerRef.current = setInterval(() => {
       setResendCooldown((prev) => {
         if (prev <= 1) {
-          clearInterval(timer);
+          if (timerRef.current) clearInterval(timerRef.current);
           return 0;
         }
         return prev - 1;
@@ -278,7 +295,7 @@ export default function QuoteWizard() {
     }, 1000);
   };
 
-  // Phase 3 & 4 — Verify OTP Code & Save to Supabase
+  // Verify OTP Code & Submit via Server API Route
   const handleVerifyOtpAndSubmit = async () => {
     const codeStr = otpCode.join("");
     if (codeStr.length < 6) {
@@ -299,36 +316,47 @@ export default function QuoteWizard() {
 
       if (authError) {
         setOtpError(authError.message || "Invalid or expired verification code. Please check and retry.");
-        setSubmitting(false);
         return;
       }
 
-      // 2. Verified successfully -> Insert into `leads` table in Supabase
+      // Immediately sign out to keep client unauthenticated
+      await supabase.auth.signOut();
+
+      // 2. Submit normalized payload to server API endpoint
+      const phoneClean = data.mobile.replace(/\D/g, "");
+      const pincodeClean = data.pincode.replace(/\D/g, "");
+
       const payload = {
         name: data.name.trim(),
-        mobile: data.mobile.trim(),
+        mobile: phoneClean,
         email: data.email.trim(),
-        pincode: data.pincode.trim(),
+        pincode: pincodeClean,
         home_type: data.homeType,
         requirement_type: data.requirementType,
         material_quality: data.materialQuality,
         budget_range: data.budgetRange,
         rooms_selected: data.roomsSelected,
         service: data.requirementType,
-        message: `Wizard Submission (${data.homeType}, ${data.materialQuality} Tier, Budget: ${data.budgetRange}). Rooms: ${data.roomsSelected.join(", ")}. Pincode: ${data.pincode}`,
+        message: `Wizard Submission (${data.homeType}, ${data.materialQuality} Tier, Budget: ${data.budgetRange}). Rooms: ${data.roomsSelected.join(", ")}. Pincode: ${pincodeClean}`,
         verified: true,
       };
 
-      const { error: dbError } = await supabase.from("leads").insert(payload);
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-      if (dbError) {
-        console.error("Database insert error:", dbError);
-        // Even if DB insert has minor glitch, lead verified OTP email
+      const resData = await res.json();
+
+      if (!res.ok || resData.error) {
+        setOtpError(resData.error || "Failed to register your lead. Please try again.");
+        return;
       }
 
       setIsCompleted(true);
     } catch (err: any) {
-      setOtpError("An unexpected error occurred. Please try again.");
+      setOtpError("An unexpected error occurred during registration. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -678,11 +706,11 @@ export default function QuoteWizard() {
       <div className="bg-white border border-graylight/80 rounded-3xl p-8 sm:p-10 shadow-xl space-y-6">
         <div className="border-b border-graylight/60 pb-4">
           <span className="text-gold font-semibold tracking-widest text-[10px] uppercase mb-1 block">
-            Step 7 of 7 — Security Check
+            Step {TOTAL_WIZARD_STEPS + 1} of {TOTAL_WIZARD_STEPS + 1} — Security Check
           </span>
           <h3 className="text-xl font-bold text-navy">Enter Verification Code</h3>
-          <p className="text-xs text-navy/60 mt-1 font-light">
-            We emailed a 6-digit OTP code to <strong className="text-navy font-semibold">{data.email}</strong>.
+          <p className="text-xs text-navy/70 mt-1 font-light leading-relaxed">
+            We sent a verification code to <strong className="text-navy font-semibold">{data.email}</strong>. Please check your inbox (and Spam/Promotions folder) and enter the 6-digit code below.
           </p>
         </div>
 
@@ -724,7 +752,7 @@ export default function QuoteWizard() {
                     prevInput?.focus();
                   }
                 }}
-                className="w-11 h-13 text-center font-mono text-xl font-bold text-navy border border-graylight rounded-xl bg-warmwhite focus:border-gold focus:ring-2 focus:ring-gold/30 transition-all duration-300"
+                className="w-11 h-12 text-center font-mono text-xl font-bold text-navy border border-graylight rounded-xl bg-warmwhite focus:border-gold focus:ring-2 focus:ring-gold/30 transition-all duration-300"
               />
             ))}
           </div>
@@ -759,7 +787,7 @@ export default function QuoteWizard() {
           <Button
             onClick={handleVerifyOtpAndSubmit}
             variant="primary"
-            className="w-full py-4 text-base"
+            className={`w-full py-4 text-base ${submitting ? "opacity-60 cursor-not-allowed" : ""}`}
           >
             {submitting ? "Verifying & Registering..." : "Verify Code & Submit Quote Request →"}
           </Button>
@@ -829,7 +857,11 @@ export default function QuoteWizard() {
           <div />
         )}
 
-        <Button onClick={handleNext} variant="primary" className="px-7 py-3 text-sm">
+        <Button
+          onClick={handleNext}
+          variant="primary"
+          className={`px-7 py-3 text-sm ${otpLoading ? "opacity-60 cursor-not-allowed" : ""}`}
+        >
           {step === TOTAL_WIZARD_STEPS ? (
             otpLoading ? "Sending Code..." : "Proceed to OTP Verification →"
           ) : (

@@ -73,9 +73,11 @@ export default function Hero() {
               </a>
               <a
                 href="/get-quote"
-                className="relative overflow-hidden inline-flex items-center justify-center px-8 py-4 rounded-full font-semibold text-base tracking-wide transition-all duration-500 ease-out hover:scale-[1.05] active:scale-[0.97] focus:outline-none focus:ring-2 focus:ring-gold/50 focus:ring-offset-2 bg-white/10 text-white border-2 border-white/60 shadow-[0_4px_20px_rgba(255,255,255,0.15)] hover:bg-white/20 hover:border-white hover:shadow-[0_6px_30px_rgba(255,255,255,0.25)] backdrop-blur-sm"
+                className="relative overflow-hidden inline-flex items-center justify-center px-8 py-4 rounded-full font-bold text-base tracking-wide transition-all duration-500 ease-out hover:scale-[1.05] active:scale-[0.97] focus:outline-none focus:ring-2 focus:ring-gold/50 focus:ring-offset-2 bg-navy text-gold border-2 border-gold shadow-[0_4px_25px_rgba(212,175,55,0.25)] hover:bg-gold hover:text-navy hover:shadow-[0_6px_35px_rgba(212,175,55,0.4)] backdrop-blur-sm"
               >
-                <span className="relative z-10">Get Free Estimate →</span>
+                <span className="relative z-10 flex items-center gap-2">
+                  Get Free Estimate →
+                </span>
               </a>
             </div>
 

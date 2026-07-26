@@ -9,7 +9,7 @@ const supabase = createClient(
 );
 
 // Comprehensive list of spam keywords commonly used by marketing & promotion bots
-const SPAM_KEYWORDS = [
+const TEXT_SPAM_KEYWORDS = [
   "seo",
   "search engine optimization",
   "digital marketing",
@@ -42,51 +42,113 @@ const SPAM_KEYWORDS = [
   "whatsapp marketing",
 ];
 
+// Specific spam terms for email addresses (excluding TLDs like .com, .net, .org)
+const EMAIL_SPAM_KEYWORDS = [
+  "marketing",
+  "seo",
+  "casino",
+  "crypto",
+  "viagra",
+  "promotion",
+  "agency",
+  "consultant",
+];
+
 export async function POST(req: NextRequest) {
   try {
-    const formData = await req.formData();
-    const name = (formData.get("name")?.toString() || "").trim();
-    const mobile = (formData.get("mobile")?.toString() || "").trim();
-    const email = (formData.get("email")?.toString() || "").trim();
-    const service = (formData.get("service")?.toString() || "Direct Contact").trim();
-    const message = (formData.get("message")?.toString() || "").trim();
+    let name = "";
+    let mobile = "";
+    let email = "";
+    let pincode = "";
+    let service = "Direct Contact";
+    let message = "";
+    let home_type: string | undefined;
+    let requirement_type: string | undefined;
+    let material_quality: string | undefined;
+    let budget_range: string | undefined;
+    let rooms_selected: string[] | undefined;
+    let verified = false;
 
-    // Honeypot fields (hidden from real users, auto-filled by bots)
-    const website = formData.get("website")?.toString() || "";
-    const confirmEmail = formData.get("confirm_email")?.toString() || "";
-    const hpAddress = formData.get("hp_address")?.toString() || "";
+    // Honeypot fields
+    let website = "";
+    let confirmEmail = "";
+    let hpAddress = "";
 
-    // 1. HONEYPOT CHECK: If any hidden honeypot field is filled, silently trap the bot with a fake success
+    const contentType = req.headers.get("content-type") || "";
+
+    if (contentType.includes("application/json")) {
+      const body = await req.json();
+      name = (body.name || "").trim();
+      mobile = (body.mobile || "").trim();
+      email = (body.email || "").trim();
+      pincode = (body.pincode || "").trim();
+      service = (body.service || "Direct Contact").trim();
+      message = (body.message || "").trim();
+      home_type = body.home_type;
+      requirement_type = body.requirement_type;
+      material_quality = body.material_quality;
+      budget_range = body.budget_range;
+      rooms_selected = body.rooms_selected;
+      verified = Boolean(body.verified);
+
+      website = body.website || "";
+      confirmEmail = body.confirm_email || "";
+      hpAddress = body.hp_address || "";
+    } else {
+      const formData = await req.formData();
+      name = (formData.get("name")?.toString() || "").trim();
+      mobile = (formData.get("mobile")?.toString() || "").trim();
+      email = (formData.get("email")?.toString() || "").trim();
+      pincode = (formData.get("pincode")?.toString() || "").trim();
+      service = (formData.get("service")?.toString() || "Direct Contact").trim();
+      message = (formData.get("message")?.toString() || "").trim();
+
+      website = formData.get("website")?.toString() || "";
+      confirmEmail = formData.get("confirm_email")?.toString() || "";
+      hpAddress = formData.get("hp_address")?.toString() || "";
+    }
+
+    // 1. HONEYPOT CHECK
     if (website || confirmEmail || hpAddress) {
-      console.warn("🤖 Bot trap triggered via honeypot field!");
+      console.warn("🤖 Bot trap triggered via honeypot field");
+      if (contentType.includes("application/json")) {
+        return NextResponse.json({ success: true, message: "Request received" });
+      }
       return NextResponse.redirect(new URL("/get-quote?submitted=true", req.url));
     }
 
-    // 2. MOBILE NUMBER VALIDATION: Must be a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9
+    // 2. MOBILE NUMBER VALIDATION: Valid 10-digit Indian mobile number
     const cleanMobile = mobile.replace(/\D/g, "");
     const indianMobileRegex = /^[6-9]\d{9}$/;
     if (!indianMobileRegex.test(cleanMobile)) {
-      console.warn(`🤖 Bot trap triggered: Invalid mobile number format (${mobile})`);
-      // Return 400 error for real users, but silently block bots trying random numbers like 2102102101
+      console.warn("🤖 Bot trap triggered: Invalid mobile number format");
       return NextResponse.json(
         { error: "Please enter a valid 10-digit Indian mobile number (e.g. 9885034309)." },
         { status: 400 }
       );
     }
 
-    // 3. SPAM KEYWORD CHECK in Message, Name, and Email
-    const combinedContent = `${name} ${email} ${message}`.toLowerCase();
-    const hasSpamKeyword = SPAM_KEYWORDS.some((kw) => combinedContent.includes(kw));
+    // 3. SPAM KEYWORD CHECK: Evaluate text (name, message) separately from email address
+    const textContent = `${name} ${message}`.toLowerCase();
+    const emailContent = email.toLowerCase();
 
-    if (hasSpamKeyword) {
-      console.warn(`🤖 Bot trap triggered: Spam keywords detected in submission by ${name}`);
-      // Fake redirect to success page so the bot thinks it succeeded, but DO NOT save to database!
+    const hasTextSpam = TEXT_SPAM_KEYWORDS.some((kw) => textContent.includes(kw));
+    const hasEmailSpam = EMAIL_SPAM_KEYWORDS.some((kw) => emailContent.includes(kw));
+
+    if (hasTextSpam || hasEmailSpam) {
+      console.warn("🤖 Bot trap triggered: Spam keywords detected in submission");
+      if (contentType.includes("application/json")) {
+        return NextResponse.json({ success: true, message: "Request processed" });
+      }
       return NextResponse.redirect(new URL("/get-quote?submitted=true", req.url));
     }
 
-    // 4. NAME VALIDATION: Reject names that look like URLs, domains, or marketing titles
+    // 4. NAME VALIDATION: Reject names containing marketing titles
     if (name.length > 50 || name.toLowerCase().includes("consultant") || name.toLowerCase().includes("agency")) {
-      console.warn(`🤖 Bot trap triggered: Suspicious name (${name})`);
+      console.warn("🤖 Bot trap triggered: Suspicious name format");
+      if (contentType.includes("application/json")) {
+        return NextResponse.json({ success: true, message: "Request processed" });
+      }
       return NextResponse.redirect(new URL("/get-quote?submitted=true", req.url));
     }
 
@@ -94,18 +156,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Name and valid mobile number are required." }, { status: 400 });
     }
 
-    // Insert legitimate lead into Supabase
-    const { error } = await supabase.from("leads").insert({
+    // Insert lead into Supabase
+    const payload = {
       name,
       mobile: cleanMobile,
       email,
+      pincode: pincode.replace(/\D/g, ""),
       service,
       message,
-      verified: false,
-    });
+      home_type,
+      requirement_type,
+      material_quality,
+      budget_range,
+      rooms_selected,
+      verified,
+    };
+
+    const { error } = await supabase.from("leads").insert(payload);
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+
+    if (contentType.includes("application/json")) {
+      return NextResponse.json({ success: true });
     }
 
     return NextResponse.redirect(new URL("/get-quote?submitted=true", req.url));

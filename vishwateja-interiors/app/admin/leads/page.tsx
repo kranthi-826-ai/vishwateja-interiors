@@ -10,6 +10,7 @@ type Lead = {
   email?: string;
   service: string;
   home_type?: string;
+  requirement_type?: string;
   material_quality?: string;
   budget_range?: string;
   pincode?: string;
@@ -21,14 +22,19 @@ type Lead = {
 export default function LeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     supabase
       .from("leads")
       .select("*")
       .order("created_at", { ascending: false })
-      .then(({ data }) => {
-        if (data) setLeads(data as Lead[]);
+      .then(({ data, error }) => {
+        if (error) {
+          setError(error.message);
+        } else if (data) {
+          setLeads(data as Lead[]);
+        }
         setLoading(false);
       });
   }, []);
@@ -36,7 +42,9 @@ export default function LeadsPage() {
   const rows = leads.map((l) => ({
     name: l.name,
     contact: `${l.mobile}${l.email ? ` | ${l.email}` : ""}`,
-    type: l.home_type ? `${l.home_type} (${l.material_quality || "Std"})` : (l.service || "-"),
+    type: l.home_type
+      ? `${l.home_type}${l.requirement_type ? ` - ${l.requirement_type}` : ""} (${l.material_quality || "Std"})`
+      : (l.service || "-"),
     budget: l.budget_range || "-",
     verified: l.verified ? "✅ Yes" : "Unverified",
     message: l.message || "-",
@@ -48,6 +56,10 @@ export default function LeadsPage() {
       <h1 className="text-2xl font-semibold text-navy mb-6">Leads & Enquiries</h1>
       {loading ? (
         <p className="text-navy/50">Loading leads...</p>
+      ) : error ? (
+        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+          Failed to load leads: {error}
+        </div>
       ) : (
         <DataTable
           columns={[
@@ -64,4 +76,5 @@ export default function LeadsPage() {
       )}
     </div>
   );
-}
+}
+
